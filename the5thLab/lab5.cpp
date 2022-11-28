@@ -39,7 +39,7 @@ int main() {
 
         //proccessing the video
         start = clock();
-        //applyColorMap(frame, frame, COLORMAP_TWILIGHT); //look colormaps in the docs
+        applyColorMap(frame, frame, COLORMAP_TWILIGHT); //look colormaps in the docs
         end = clock();
         double proc_time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
         totalTime += proc_time;
