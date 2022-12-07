@@ -185,7 +185,8 @@ void multMatrices_NO_OPT(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, co
 }
 
 void multMatrices_VECTOR_OPT(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
-    std::array<float, MATRIX_SIZE*MATRIX_SIZE> tmp = {0};
+    static std::array<float, MATRIX_SIZE*MATRIX_SIZE> tmp;
+    std::fill(tmp.begin(), tmp.end(), 0);
     float tmpVector[4];
     for (int i = 0; i < MATRIX_SIZE; i++) {
         for (int k = 0; k < MATRIX_SIZE; k++) {
