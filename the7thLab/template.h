@@ -1,10 +1,9 @@
-
-#define CONVERT(c) c
-
 #define TCAT2(a, b) a##_##b
 #define CAT2(a, b) TCAT2(a, b)
 
-void CAT2(SUMMATRIX_FUNCTION_NAME, NO__OPT) (const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
+void CAT2(SUMMATRIX_FUNCTION_NAME, NO__OPT) (const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1,
+                                             const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2,
+                                             std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
     for (int i = 0; i < MATRIX_SIZE; i++) {
         for (int j = 0; j < MATRIX_SIZE; j++) {
             #ifndef SUBSTRACT
@@ -16,7 +15,9 @@ void CAT2(SUMMATRIX_FUNCTION_NAME, NO__OPT) (const std::array<float, MATRIX_SIZE
     }
 }
 
-void CAT2(SUMMATRIX_FUNCTION_NAME, VECTOR__OPT) (const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
+void CAT2(SUMMATRIX_FUNCTION_NAME, VECTOR__OPT) (const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1,
+                                                 const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2,
+                                                 std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
     for (int i = 0; i < MATRIX_SIZE; i++) {
         __m128 result;
         for (int j = 0; j < MATRIX_SIZE_VECTOR_OPT; j += 4) {
@@ -41,7 +42,9 @@ void CAT2(SUMMATRIX_FUNCTION_NAME, VECTOR__OPT) (const std::array<float, MATRIX_
     }
 }
 
-void CAT2(SUMMATRIX_FUNCTION_NAME, BLAS__OPT) (const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
+void CAT2(SUMMATRIX_FUNCTION_NAME, BLAS__OPT) (const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1,
+                                               const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, 
+                                               std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
     for (int i = 0; i < MATRIX_SIZE; i++) {
         const float *M1_p = &M1[i*MATRIX_SIZE];
         const float *M2_p = &M2[i*MATRIX_SIZE];
@@ -55,5 +58,3 @@ void CAT2(SUMMATRIX_FUNCTION_NAME, BLAS__OPT) (const std::array<float, MATRIX_SI
         #endif
     }
 }
-
-#undef CONVERT
