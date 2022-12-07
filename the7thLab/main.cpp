@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <array>
 #include <cstring>
 #include <cmath>
 #include <xmmintrin.h>
@@ -12,60 +12,63 @@ extern "C" {
 }
 #endif
 
-#define MATRIX_SIZE 4
+#define MATRIX_SIZE 13
+#define MATRIX_SIZE_VECTOR_OPT ((MATRIX_SIZE) - ((MATRIX_SIZE) % (4)))
 #define iterations 10
 
 #define NO_OPT 0
 #define VECTOR_OPT 1
 #define BLAS_OPT 2
 
-/*tasks:
-1) Убрать if'ы из for'ов 
+/*таски:
+1) Убрать if'ы из for'ов // добавила генерацию кода //done//
 2) Найти blas сложение векторов  //done//
 3) Убрать транспонирование матрицы в векторизации и векторизовать то, что будет //done//
 4) Сделать тесты на корректность разложения
 5) Сделать проверку на существование обратной матрицы
+6) Немного доработать векторизацию для чисел не кратных 4 //done//
+7) наверное стоит отказаться от vector -> unique_pointer //done//
 */
 
 #include "generator.h"
 
-double matrixInverse(std::vector<float>, std::vector<float>&, int type);
-void printMatrix(const std::vector<float>&);
-std::vector<float> generateMatrix();
+double matrixInverse(std::array<float, MATRIX_SIZE*MATRIX_SIZE>, std::array<float, MATRIX_SIZE*MATRIX_SIZE>&, int type);
+void printMatrix(const std::array<float, MATRIX_SIZE*MATRIX_SIZE>&);
+std::array<float, MATRIX_SIZE*MATRIX_SIZE> generateMatrix();
 
 int main() {
-    std::vector<float> A(MATRIX_SIZE*MATRIX_SIZE);
-    std::vector<float> backMatrix(MATRIX_SIZE*MATRIX_SIZE, 0); //A^(-1)
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> A = {0};
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> backMatrix1 = {0}; //A^(-1)
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> backMatrix2 = {0};
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> backMatrix3 = {0};
 
     A = generateMatrix();
 
     int type = NO_OPT;
     double res;
-    res = matrixInverse(A, backMatrix, type); //returns time 
+    res = matrixInverse(A, backMatrix1, type); //returns time 
     std::cout << "no optimization: " << res << " ms\n";
 
-    printMatrix(backMatrix);
-
-    std::fill(backMatrix.begin(), backMatrix.end(), 0);
+    printMatrix(backMatrix1);
 
     type = VECTOR_OPT;
-    res = matrixInverse(A, backMatrix, type); //returns time 
+    res = matrixInverse(A, backMatrix2, type); //returns time 
     std::cout << "vector optimization: " << res << " ms\n";
 
-    printMatrix(backMatrix);
-
-    std::fill(backMatrix.begin(), backMatrix.end(), 0);
+    printMatrix(backMatrix2);
 
     type = BLAS_OPT;
-    res = matrixInverse(A, backMatrix, type); //returns time 
+    res = matrixInverse(A, backMatrix3, type); //returns time 
     std::cout << "blas optimization: " << res << " ms\n";
 
-    printMatrix(backMatrix);
+    printMatrix(backMatrix3);
+
+    /*tests*/
 
     return 0;
 }
 
-void printMatrix(const std::vector<float> &M) {
+void printMatrix(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &M) {
     for (int i = 0; i < MATRIX_SIZE; i++) {
         for (int j = 0; j < MATRIX_SIZE; j++) {
             std::cout << M[i*MATRIX_SIZE + j] << " ";
@@ -76,8 +79,8 @@ void printMatrix(const std::vector<float> &M) {
 }
 
 
-std::vector<float> generateMatrix() {
-    std::vector<float> A(MATRIX_SIZE*MATRIX_SIZE);
+std::array<float, MATRIX_SIZE*MATRIX_SIZE> generateMatrix() {
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> A = {0};
     for (int i = 0; i < MATRIX_SIZE; i++) {
         for (int j = 0; j < MATRIX_SIZE; j++) {
             A[i*MATRIX_SIZE + j] = std::rand() % 10;
@@ -87,18 +90,18 @@ std::vector<float> generateMatrix() {
     return A;
 }
 
-void createIdentityMatrix(std::vector<float> &M);
-void findMatrixB(const std::vector<float> A ,std::vector<float> &B);
-void multMatrices(const std::vector<float> M1, const std::vector<float> M2, std::vector<float> &res, int type);
-void sumMatrices(const std::vector<float> M1, const std::vector<float> M2, bool sign, std::vector<float> &res, int type);
+void createIdentityMatrix(std::array<float, MATRIX_SIZE*MATRIX_SIZE> &M);
+void findMatrixB(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> A ,std::array<float, MATRIX_SIZE*MATRIX_SIZE> &B);
+void multMatrices(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res, int type);
+void sumMatrices(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, bool sign, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res, int type);
 
-double matrixInverse(std::vector<float> A, std::vector<float> &resMatrix, int type) {
+double matrixInverse(std::array<float, MATRIX_SIZE*MATRIX_SIZE> A, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &resMatrix, int type) {
     clock_t start = clock();
     
-    std::vector<float> I(MATRIX_SIZE*MATRIX_SIZE, 0);
-    std::vector<float> R(MATRIX_SIZE*MATRIX_SIZE, 0); //R = I - B*A
-    std::vector<float> B(MATRIX_SIZE*MATRIX_SIZE, 0);
-    std::vector<float> tmp(MATRIX_SIZE*MATRIX_SIZE, 0);
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> I = {1};
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> R = {0}; //R = I - B*A
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> B = {0};
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> tmp = {0};
 
     createIdentityMatrix(I);
     findMatrixB(A, B);    
@@ -122,13 +125,13 @@ double matrixInverse(std::vector<float> A, std::vector<float> &resMatrix, int ty
     return time;
 }
 
-void createIdentityMatrix(std::vector<float> &I) {
+void createIdentityMatrix(std::array<float, MATRIX_SIZE*MATRIX_SIZE> &I) {
     for (int i = 0; i < MATRIX_SIZE; i++) {
         I[i*MATRIX_SIZE + i] = 1;
     }
 }
 
-void findMatrixB(const std::vector<float> A, std::vector<float> &B) {
+void findMatrixB(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> A, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &B) {
     //||A||1 = максимальный по сумме элементов столбец -> maxSumJ
     //||A||inf = максимальная по сумме элементов строчка -> maxSumI
     int maxSumI = 0, maxSumJ = 0;
@@ -152,11 +155,11 @@ void findMatrixB(const std::vector<float> A, std::vector<float> &B) {
     }
 }
 
-void multMatrices_NO_OPT(const std::vector<float> M1, const std::vector<float> M2, std::vector<float> &res);
-void multMatrices_VECTOR_OPT(std::vector<float> M1, std::vector<float> M2, std::vector<float> &res);
-void multMatrices_BLAS_OPT(std::vector<float> M1, std::vector<float> M2, std::vector<float> &res);
+void multMatrices_NO_OPT(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res);
+void multMatrices_VECTOR_OPT(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res);
+void multMatrices_BLAS_OPT(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res);
 
-void multMatrices(const std::vector<float> M1, const std::vector<float> M2, std::vector<float> &res, int type) {
+void multMatrices(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res, int type) {
     switch (type) {
         case NO_OPT:
             multMatrices_NO_OPT(M1, M2, res);
@@ -169,7 +172,7 @@ void multMatrices(const std::vector<float> M1, const std::vector<float> M2, std:
             break;
     }
 }
-void multMatrices_NO_OPT(const std::vector<float> M1, const std::vector<float> M2, std::vector<float> &res) {
+void multMatrices_NO_OPT(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
     for (int i = 0; i < MATRIX_SIZE; i++) {
         for (int j = 0; j < MATRIX_SIZE; j++) {
            float tmpSum = 0;
@@ -181,35 +184,45 @@ void multMatrices_NO_OPT(const std::vector<float> M1, const std::vector<float> M
     }
 }
 
-void multMatrices_VECTOR_OPT(std::vector<float> M1, std::vector<float> M2, std::vector<float> &res) {
-    std::vector<float> tmp(MATRIX_SIZE*MATRIX_SIZE);
+void multMatrices_VECTOR_OPT(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
+    std::array<float, MATRIX_SIZE*MATRIX_SIZE> tmp = {0};
     float tmpVector[4];
     for (int i = 0; i < MATRIX_SIZE; i++) {
         for (int k = 0; k < MATRIX_SIZE; k++) {
             __m128 M1_scalar = _mm_load_ps1(&M1[i*MATRIX_SIZE + k]);
-            for (int j = 0; j < MATRIX_SIZE; j += 4) {
-                __m128 M2_row = _mm_load_ps(&M2[k*MATRIX_SIZE + j]);
+            for (int j = 0; j < MATRIX_SIZE_VECTOR_OPT; j += 4) {
+                __m128 M2_row = _mm_loadu_ps(&M2[k*MATRIX_SIZE + j]);
                 __m128 result;
                 result = _mm_mul_ps(M1_scalar, M2_row);
-                _mm_store_ps(tmpVector, result);
+                _mm_storeu_ps(tmpVector, result);
                 for (int m = 0, n = j; m < 4; m++, n++) {
                     tmp[i*MATRIX_SIZE + n] += tmpVector[m];
                 }
             }
         }
     }
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int k = 0; k < MATRIX_SIZE; k++) {
+            float tmpSum = 0;
+            for (int j = MATRIX_SIZE_VECTOR_OPT; j < MATRIX_SIZE; j++) {
+                float scalar = M1[i*MATRIX_SIZE + k];
+                tmpSum = M2[k*MATRIX_SIZE + j] * scalar;
+                tmp[i*MATRIX_SIZE + j] += tmpSum;
+            }
+        }
+    }
     res = tmp;
 }
 
-void multMatrices_BLAS_OPT(std::vector<float> M1, std::vector<float> M2, std::vector<float> &res) {
+void multMatrices_BLAS_OPT(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res) {
     //https://www.ibm.com/docs/en/essl/6.3?topic=mos-sgemm-dgemm-cgemm-zgemm-combined-matrix-multiplication-addition-general-matrices-their-transposes-conjugate-transposes
-    float *M1_p = &M1[0];
-    float *M2_p = &M2[0];
+    const float *M1_p = &M1[0];
+    const float *M2_p = &M2[0];
     float *res_p = &res[0];
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, MATRIX_SIZE, MATRIX_SIZE, MATRIX_SIZE, 1.0, M1_p, MATRIX_SIZE, M2_p, MATRIX_SIZE, 0.0, res_p, MATRIX_SIZE);
 }
 
-void sumMatrices(const std::vector<float> M1, const std::vector<float> M2, bool sign, std::vector<float> &res, int type) {
+void sumMatrices(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> M2, bool sign, std::array<float, MATRIX_SIZE*MATRIX_SIZE> &res, int type) {
     if (sign == true) {
         switch (type) {
             case NO_OPT:
