@@ -4,35 +4,33 @@
 #include <cassert>
 #include "matrixInverse.h"
 
-void isMatricesEqual(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &M1, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &M2,
-                     const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &M3) {
-    assert((M1 == M2) && "Matrices M1 and M2 are not equal\n");
-    assert((M1 == M3) && "Matrices M1 and M3 are not equal\n");
-    assert((M2 == M3) && "Matrices M2 and M3 are not equal\n");
-}
-
-void isInvertable(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &backMatrix) { //inverse matrix's elements are equal if its determinant is zero 
-    for (int i = 0; i < MATRIX_SIZE*MATRIX_SIZE - 1; i++) {
-        assert((backMatrix.at(i) != backMatrix.at(i+1)) && "Matrix is not invertable (the determinant is zero)\n");
+void isInvertable(const float *backMatrix) { //inverse matrix's elements are equal if its determinant is zero 
+    for (int i = 0; i < SQUARED_SIZE - 1; i++) {
+        assert((backMatrix[i] != backMatrix[i+1]) && "Matrix is not invertable (the determinant is zero)\n");
     }
 }
 
-void testResult(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &A, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &backMatrix) {
-    std::array<float, MATRIX_SIZE*MATRIX_SIZE> I = {0};
-    multMatrices_BLAS_OPT(A, backMatrix, I);
+void isInverseCorrect(const float *A, const float *M) {
+    auto I = new float [SQUARED_SIZE];
+    multMatrices_BLAS_OPT(A, M, I);
+    std::cout << "I\n";
+    printMatrix(I);
     for (int i = 0; i < MATRIX_SIZE; i++) {
         for (int j = 0; j < MATRIX_SIZE; j++) {
-            
+            if (i == j) {
+                assert(((float)1 - (float)fabs(I[i*MATRIX_SIZE + j]) <= 0.2) && "Incorrect inverse matrix\n");
+                continue;
+            }
+            assert(((float)1 - (float)fabs(I[i*MATRIX_SIZE + j]) >= 0.01) && "Incorrect inverse matrix\n");
         }
     }
+
+    delete [] I;
 }
 
-void mainTest(const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &A, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &M1, 
-              const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &M2, const std::array<float, MATRIX_SIZE*MATRIX_SIZE> &M3) {
-    isMatricesEqual(M1, M2, M3);
-    std::cout << "Matrices are equal\n";
-    isInvertable(M1);
+void mainTest(const float *A, const float *M) {
+    isInvertable(M);
     std::cout << "Matrix is invertable\n";
-    testResult(A, M1);
-    std::cout << "All tests are passed\n";
+    isInverseCorrect(A, M);
+    std::cout << "Inverse matrix is correct\n";
 }
