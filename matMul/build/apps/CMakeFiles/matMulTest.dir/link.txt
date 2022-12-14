@@ -1,0 +1,1 @@
+/usr/bin/g++ -O3 -march=native -g CMakeFiles/matMulTest.dir/matMulTest.cpp.o ../src/CMakeFiles/mult.dir/multiply.cpp.o -o matMulTest  /usr/local/lib/libgtest.a 

@@ -1,0 +1,9 @@
+/home/dlaaren/Desktop/matrixMult/matMul/build/CMakeFiles/edit_cache.dir
+/home/dlaaren/Desktop/matrixMult/matMul/build/CMakeFiles/rebuild_cache.dir
+/home/dlaaren/Desktop/matrixMult/matMul/build/src/CMakeFiles/mult.dir
+/home/dlaaren/Desktop/matrixMult/matMul/build/src/CMakeFiles/edit_cache.dir
+/home/dlaaren/Desktop/matrixMult/matMul/build/src/CMakeFiles/rebuild_cache.dir
+/home/dlaaren/Desktop/matrixMult/matMul/build/apps/CMakeFiles/matMulBench.dir
+/home/dlaaren/Desktop/matrixMult/matMul/build/apps/CMakeFiles/matMulTest.dir
+/home/dlaaren/Desktop/matrixMult/matMul/build/apps/CMakeFiles/edit_cache.dir
+/home/dlaaren/Desktop/matrixMult/matMul/build/apps/CMakeFiles/rebuild_cache.dir

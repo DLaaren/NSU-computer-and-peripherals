@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/dlaaren/Desktop/matrixMult/matMul/build/src",
+  "command": "/usr/bin/g++  -I/home/dlaaren/Desktop/matrixMult/matMul/src -O3 -march=native -g -std=gnu++17 -o CMakeFiles/mult.dir/multiply.cpp.o -c /home/dlaaren/Desktop/matrixMult/matMul/src/multiply.cpp",
+  "file": "/home/dlaaren/Desktop/matrixMult/matMul/src/multiply.cpp"
+},
+{
+  "directory": "/home/dlaaren/Desktop/matrixMult/matMul/build/apps",
+  "command": "/usr/bin/g++  -I/home/dlaaren/Desktop/matrixMult/matMul/src -O3 -march=native -g -std=gnu++17 -o CMakeFiles/matMulBench.dir/matMulBench.cpp.o -c /home/dlaaren/Desktop/matrixMult/matMul/apps/matMulBench.cpp",
+  "file": "/home/dlaaren/Desktop/matrixMult/matMul/apps/matMulBench.cpp"
+},
+{
+  "directory": "/home/dlaaren/Desktop/matrixMult/matMul/build/apps",
+  "command": "/usr/bin/g++  -I/home/dlaaren/Desktop/matrixMult/matMul/src -O3 -march=native -g -std=gnu++17 -o CMakeFiles/matMulTest.dir/matMulTest.cpp.o -c /home/dlaaren/Desktop/matrixMult/matMul/apps/matMulTest.cpp",
+  "file": "/home/dlaaren/Desktop/matrixMult/matMul/apps/matMulTest.cpp"
+}
+]

@@ -1,0 +1,1 @@
+/usr/bin/g++ -O3 -march=native -g CMakeFiles/matMulBench.dir/matMulBench.cpp.o ../src/CMakeFiles/mult.dir/multiply.cpp.o -o matMulBench  /usr/lib/libbenchmark.so.1.7.1 
