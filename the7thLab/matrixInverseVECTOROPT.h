@@ -25,7 +25,6 @@ void multMatrices_VECTOR_OPT(const float *M1, const float *M2, float *res) {
     if (MATRIX_SIZE != MATRIX_SIZE_VECTOR_OPT) {
         for (int i = 0; i < MATRIX_SIZE; i++) {
             for (int k = 0; k < MATRIX_SIZE; k++) {
-                float tmpSum = 0;
                 for (int j = MATRIX_SIZE_VECTOR_OPT; j < MATRIX_SIZE; j++) {
                     tmp[i*MATRIX_SIZE + j] += M2[k*MATRIX_SIZE + j] * M1[i*MATRIX_SIZE + k];
                 }

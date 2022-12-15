@@ -5,11 +5,11 @@
 #include <cmath>
 #include <xmmintrin.h>
 
-#define MATRIX_SIZE 400
+#define MATRIX_SIZE 16
 #define SQUARED_SIZE ((MATRIX_SIZE)*(MATRIX_SIZE)) 
 #define MATRIX_SIZE_VECTOR_OPT ((MATRIX_SIZE) - ((MATRIX_SIZE) % (4)))
-#define iterations 10
-//for tests it should be 100'000
+#define iterations 10000
+//for tests it should be around 10'000 or 100'000 if < 10 
 
 #include "matrixInverseNOOPT.h"
 #include "matrixInverseVECTOROPT.h"
