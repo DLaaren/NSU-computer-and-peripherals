@@ -12,10 +12,10 @@ protected:
                 std::mt19937 gen(rd());
                 std::uniform_real_distribution<> dis(-10.0, 10.0);
 
-		a = new(std::align_val_t(32)) double[N * O];
-		b = new(std::align_val_t(32)) double[O * M];
-		reference = new(std::align_val_t(32)) double[N * M];
-                result = new(std::align_val_t(32)) double[N * M];
+		a = new(std::align_val_t(32)) float[N * O];
+		b = new(std::align_val_t(32)) float[O * M];
+		reference = new(std::align_val_t(32)) float[N * M];
+                result = new(std::align_val_t(32)) float[N * M];
 
 		for (int i = 0; i < N; i++)
 			for (int k = 0; k < O; k++)
@@ -38,10 +38,10 @@ protected:
 
 	int N = 1024, M = 1024, O = 1024;
 
-	double *a;
-	double *b;
-	double *reference;
-	double *result;
+	float *a;
+	float *b;
+	float *reference;
+	float *result;
 };
 
 TEST_F(MatrixFixture, test1) {

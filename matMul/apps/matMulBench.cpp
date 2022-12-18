@@ -15,9 +15,9 @@ public:
 		N = st.range(0);
 		M = st.range(1);
 		O = st.range(2);
-		a = new(std::align_val_t(32)) double[N * O];
-		b = new(std::align_val_t(32)) double[O * M];
-		c = new(std::align_val_t(32)) double[N * M];
+		a = new(std::align_val_t(32)) float[N * O];
+		b = new(std::align_val_t(32)) float[O * M];
+		c = new(std::align_val_t(32)) float[N * M];
 
 		for (std::ptrdiff_t i = 0; i < N; i++)
 			for (std::ptrdiff_t k = 0; k < O; k++)
@@ -35,9 +35,9 @@ public:
 		delete[] c;
 	}
 
-	double *a;
-	double *b;
-	double *c;
+	float *a;
+	float *b;
+	float *c;
 	std::ptrdiff_t N, M, O;
 };
 

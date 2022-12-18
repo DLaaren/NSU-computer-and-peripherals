@@ -187,40 +187,21 @@ src/CMakeFiles/mult.dir/multiply.cpp.o: /home/dlaaren/Desktop/matrixMult/matMul/
   /usr/include/c++/12.2.0/bits/ostream.tcc \
   /usr/include/c++/12.2.0/istream \
   /usr/include/c++/12.2.0/bits/istream.tcc \
-  /usr/include/c++/12.2.0/iomanip \
-  /usr/include/c++/12.2.0/locale \
-  /usr/include/c++/12.2.0/bits/locale_facets_nonio.h \
-  /usr/include/c++/12.2.0/ctime \
-  /usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/time_members.h \
-  /usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/messages_members.h \
-  /usr/include/libintl.h \
-  /usr/include/c++/12.2.0/bits/codecvt.h \
-  /usr/include/c++/12.2.0/bits/locale_facets_nonio.tcc \
-  /usr/include/c++/12.2.0/bits/locale_conv.h \
-  /usr/include/c++/12.2.0/bits/quoted_string.h \
-  /usr/include/c++/12.2.0/sstream \
-  /usr/include/c++/12.2.0/bits/sstream.tcc
+  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/xmmintrin.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/mm_malloc.h \
+  /usr/include/c++/12.2.0/stdlib.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/emmintrin.h \
+  /usr/include/c++/12.2.0/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h
 
 
-/usr/include/c++/12.2.0/sstream:
+/usr/include/strings.h:
 
-/usr/include/c++/12.2.0/bits/quoted_string.h:
+/usr/include/string.h:
 
-/usr/include/c++/12.2.0/bits/locale_facets_nonio.tcc:
-
-/usr/include/c++/12.2.0/bits/codecvt.h:
-
-/usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/time_members.h:
-
-/usr/include/c++/12.2.0/ctime:
-
-/usr/include/c++/12.2.0/bits/locale_facets_nonio.h:
-
-/usr/include/c++/12.2.0/locale:
-
-/usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/messages_members.h:
-
-/usr/include/c++/12.2.0/iomanip:
+/usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/mm_malloc.h:
 
 /usr/include/c++/12.2.0/bits/istream.tcc:
 
@@ -231,6 +212,8 @@ src/CMakeFiles/mult.dir/multiply.cpp.o: /home/dlaaren/Desktop/matrixMult/matMul/
 /usr/include/c++/12.2.0/bits/locale_facets.tcc:
 
 /usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/ctype_inline.h:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/xmmintrin.h:
 
 /usr/include/c++/12.2.0/bits/streambuf_iterator.h:
 
@@ -299,6 +282,8 @@ src/CMakeFiles/mult.dir/multiply.cpp.o: /home/dlaaren/Desktop/matrixMult/matMul/
 /usr/include/c++/12.2.0/bits/utility.h:
 
 /usr/include/c++/12.2.0/ext/type_traits.h:
+
+/usr/include/c++/12.2.0/stdlib.h:
 
 /usr/include/c++/12.2.0/ios:
 
@@ -376,11 +361,15 @@ src/CMakeFiles/mult.dir/multiply.cpp.o: /home/dlaaren/Desktop/matrixMult/matMul/
 
 /usr/include/bits/typesizes.h:
 
+/usr/include/c++/12.2.0/cstring:
+
 /usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/cpu_defines.h:
 
 /usr/include/c++/12.2.0/new:
 
 /usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/c++locale.h:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/mmintrin.h:
 
 /usr/include/bits/cpu-set.h:
 
@@ -403,8 +392,6 @@ src/CMakeFiles/mult.dir/multiply.cpp.o: /home/dlaaren/Desktop/matrixMult/matMul/
 /usr/include/gnu/stubs-64.h:
 
 /usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/os_defines.h:
-
-/usr/include/libintl.h:
 
 /usr/include/c++/12.2.0/x86_64-pc-linux-gnu/bits/c++config.h:
 
@@ -444,6 +431,8 @@ src/CMakeFiles/mult.dir/multiply.cpp.o: /home/dlaaren/Desktop/matrixMult/matMul/
 
 /usr/include/c++/12.2.0/cstdlib:
 
+/usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/emmintrin.h:
+
 /usr/include/bits/libc-header-start.h:
 
 /usr/include/c++/12.2.0/bits/stl_algobase.h:
@@ -465,8 +454,6 @@ src/CMakeFiles/mult.dir/multiply.cpp.o: /home/dlaaren/Desktop/matrixMult/matMul/
 /usr/include/bits/types/__locale_t.h:
 
 /usr/include/bits/types.h:
-
-/usr/include/c++/12.2.0/bits/locale_conv.h:
 
 /usr/include/bits/wctype-wchar.h:
 
@@ -503,8 +490,6 @@ src/CMakeFiles/mult.dir/multiply.cpp.o: /home/dlaaren/Desktop/matrixMult/matMul/
 /usr/include/bits/types/struct_tm.h:
 
 /usr/include/bits/types/mbstate_t.h:
-
-/usr/include/c++/12.2.0/bits/sstream.tcc:
 
 /usr/include/c++/12.2.0/bits/basic_string.h:
 

@@ -1,12 +1,12 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
-#include <iomanip>
-//#pragma GCC target("avx2")
+#include <xmmintrin.h>
+#include <cstring>
 
-void simple_multiply(double *mat1,
-              double *mat2, std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O,
-              double *res) {
+void simple_multiply(float *mat1,
+              float *mat2, std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O,
+              float *res) {
     for (std::ptrdiff_t i = 0; i < N; i++) {
         for (std::ptrdiff_t j = 0; j < M; j++) {
             for (std::ptrdiff_t k = 0; k < O; k++)
@@ -15,44 +15,66 @@ void simple_multiply(double *mat1,
     }
 }
 
-void sum(const double *A, std::ptrdiff_t A_row, const double *B, std::ptrdiff_t B_row, double *C, std::ptrdiff_t C_row,
+void sum(const float *A, std::ptrdiff_t A_row, const float *B, std::ptrdiff_t B_row, float *C, std::ptrdiff_t C_row,
          std::ptrdiff_t N, std::ptrdiff_t M) {
-    for (std::ptrdiff_t i = 0; i < N; i++) {
+    /* for (std::ptrdiff_t i = 0; i < N; i++) {
         for (std::ptrdiff_t j = 0; j < M; j++) {
             C [i * C_row + j] = A [i * A_row + j] + B [i * B_row + j];
         }
+    } */
+
+    for (int i = 0; i < N; i++) {
+        __m128 result;
+        for (int j = 0; j < M; j += 4) {
+            __m128 A_vector = _mm_loadu_ps(&A[i * A_row + j]);
+            __m128 B_vector = _mm_loadu_ps(&B[i * B_row + j]);
+            result = _mm_add_ps(A_vector, B_vector);
+            _mm_storeu_ps(&C[i * C_row + j], result);
+        }
     }
 }
 
-void sub(const double *A, std::ptrdiff_t A_row, const double *B, std::ptrdiff_t B_row, double *C, std::ptrdiff_t C_row,
+void sub(const float *A, std::ptrdiff_t A_row, const float *B, std::ptrdiff_t B_row, float *C, std::ptrdiff_t C_row,
          std::ptrdiff_t N, std::ptrdiff_t M) {
-    for (std::ptrdiff_t i = 0; i < N; i++) {
+    /* for (std::ptrdiff_t i = 0; i < N; i++) {
         for (std::ptrdiff_t j = 0; j < M; j++) {
             C [i * C_row + j] = A [i * A_row + j] - B [i * B_row + j];
         }
+    } */
+
+    for (int i = 0; i < N; i++) {
+        __m128 result;
+        for (int j = 0; j < M; j += 4) {
+            __m128 A_vector = _mm_loadu_ps(&A[i * A_row + j]);
+            __m128 B_vector = _mm_loadu_ps(&B[i * B_row + j]);
+            result = _mm_sub_ps(A_vector, B_vector);
+            _mm_storeu_ps(&C[i * C_row + j], result);
+        }
     }
 }
 
-void GeneralMult(std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O, const double *A, std::ptrdiff_t A_row, const double *B, std::ptrdiff_t B_row, double *C, std::ptrdiff_t C_row) {
-    for (std::ptrdiff_t i = 0; i < N; i++) {
+void GeneralMult(std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O, const float *A, std::ptrdiff_t A_row, const float *B, std::ptrdiff_t B_row, float *C, std::ptrdiff_t C_row) {
+    /*for (std::ptrdiff_t i = 0; i < N; i++) {
         for (std::ptrdiff_t j = 0; j < M; j++) {
             C [i * C_row + j] = 0.0;  
             for (std::ptrdiff_t k = 0; k < O; k++)  
-                C [i * C_row + j] += (double)(A [i * A_row + k] * B [k * B_row + j]);  
+                C [i * C_row + j] += (float)(A [i * A_row + k] * B [k * B_row + j]);  
         } 
-    }
-}
+    }*/
 
-#include <iomanip>
-
-void printMatrix(const double *Mat, std::ptrdiff_t N, std::ptrdiff_t M) {
-    for (std::ptrdiff_t i = 0; i < N; i++) {
-        for (std::ptrdiff_t j = 0; j < M; j++) {
-            std::cout << std::setprecision(17) << Mat[i * M + j] << " ";
+    memset(C, 0, sizeof(float) * N*M);
+    for (int i = 0; i < N; i++) {
+        for (int k = 0; k < O; k++) {
+            __m128 A_scalar = _mm_load_ps1(&A[i * A_row + k]);
+            for (int j = 0; j < M; j += 4) {
+                __m128 B_vector = _mm_loadu_ps(&B[k * B_row + j]);
+                __m128 mulResult = _mm_mul_ps(A_scalar, B_vector);
+                __m128 resMatrix = _mm_loadu_ps(&C[i * C_row + j]);
+                resMatrix = _mm_add_ps(mulResult, resMatrix);
+                _mm_storeu_ps(&C[i * C_row + j], resMatrix);
+            }
         }
-        std::cout << "\n";
     }
-    std::cout << "\n";
 }
 
 //  Strassen algorithm:  https://habr.com/ru/post/313258
@@ -79,10 +101,10 @@ void printMatrix(const double *Mat, std::ptrdiff_t N, std::ptrdiff_t M) {
 //  C21 = P2 + P4
 //  C22 = P1 - P2 + P3 + P6
 
-void StrassenMult(std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O, const double *A, const std::ptrdiff_t A_row,
-                  const double *B, std::ptrdiff_t B_row, double *C, std::ptrdiff_t C_row) {
+void StrassenMult(std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O, const float *A, const std::ptrdiff_t A_row,
+                  const float *B, std::ptrdiff_t B_row, float *C, std::ptrdiff_t C_row) {
 
-    if ( N == 1 || M == 1 || O == 1 /*|| ((unsigned long long)N * M * O < 512 * 512 * 512)*/ )
+    if ( N == 1 || M == 1 || O == 1 || N * M * O < 128 * 128 * 128) 
         GeneralMult(N, M, O, A, A_row, B, B_row, C, C_row); //if matrices are too small
     else {
         std::ptrdiff_t N_2 = N / 2;
@@ -90,41 +112,41 @@ void StrassenMult(std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O, const do
         std::ptrdiff_t O_2 = O / 2;
 
         //A = N * O
-        const double *A11 = &A [0]; 
-        const double *A12 = &A [O_2];
-        const double *A21 = &A [N_2 * A_row]; 
-        const double *A22 = &A [N_2 * A_row + O_2];
+        const float *A11 = &A [0]; 
+        const float *A12 = &A [O_2];
+        const float *A21 = &A [N_2 * A_row]; 
+        const float *A22 = &A [N_2 * A_row + O_2];
 
         //B = O * M
-        const double *B11 = &B [0];
-        const double *B12 = &B [M_2];
-        const double *B21 = &B [O_2 * B_row];
-        const double *B22 = &B [O_2 * B_row + M_2];
+        const float *B11 = &B [0];
+        const float *B12 = &B [M_2];
+        const float *B21 = &B [O_2 * B_row];
+        const float *B22 = &B [O_2 * B_row + M_2];
 
         //C = N * M
-        double *C11 = &C [0];
-        double *C12 = &C [M_2];
-        double *C21 = &C [N_2 * C_row];
-        double *C22 = &C [N_2 * C_row + M_2];
+        float *C11 = &C [0];
+        float *C12 = &C [M_2];
+        float *C21 = &C [N_2 * C_row];
+        float *C22 = &C [N_2 * C_row + M_2];
 
-        double *S1 = (double *)malloc(sizeof(double) * N_2 * O_2); //A
-        double *S2 = (double *)malloc(sizeof(double) * O_2 * M_2); //B
-        double *S3 = (double *)malloc(sizeof(double) * N_2 * O_2); //A
-        double *S4 = (double *)malloc(sizeof(double) * O_2 * M_2); // B
-        double *S5 = (double *)malloc(sizeof(double) * O_2 * M_2); // B
-        double *S6 = (double *)malloc(sizeof(double) * N_2 * O_2); // A
-        double *S7 = (double *)malloc(sizeof(double) * N_2 * O_2); // A
-        double *S8 = (double *)malloc(sizeof(double) * O_2 * M_2); // B
-        double *S9 = (double *)malloc(sizeof(double) * N_2 * O_2); // A
-        double *S10 = (double *)malloc(sizeof(double) * O_2 * M_2); // B
+        float *S1 = (float *)malloc(sizeof(float) * N_2 * O_2); //A
+        float *S2 = (float *)malloc(sizeof(float) * O_2 * M_2); //B
+        float *S3 = (float *)malloc(sizeof(float) * N_2 * O_2); //A
+        float *S4 = (float *)malloc(sizeof(float) * O_2 * M_2); // B
+        float *S5 = (float *)malloc(sizeof(float) * O_2 * M_2); // B
+        float *S6 = (float *)malloc(sizeof(float) * N_2 * O_2); // A
+        float *S7 = (float *)malloc(sizeof(float) * N_2 * O_2); // A
+        float *S8 = (float *)malloc(sizeof(float) * O_2 * M_2); // B
+        float *S9 = (float *)malloc(sizeof(float) * N_2 * O_2); // A
+        float *S10 = (float *)malloc(sizeof(float) * O_2 * M_2); // B
 
-        double *P1 = (double *)malloc(sizeof(double) * N_2 * M_2);
-        double *P2 = (double *)malloc(sizeof(double) * N_2 * M_2);
-        double *P3 = (double *)malloc(sizeof(double) * N_2 * M_2);
-        double *P4 = (double *)malloc(sizeof(double) * N_2 * M_2);
-        double *P5 = (double *)malloc(sizeof(double) * N_2 * M_2);
-        double *P6 = (double *)malloc(sizeof(double) * N_2 * M_2);
-        double *P7 = (double *)malloc(sizeof(double) * N_2 * M_2);
+        float *P1 = (float *)malloc(sizeof(float) * N_2 * M_2);
+        float *P2 = (float *)malloc(sizeof(float) * N_2 * M_2);
+        float *P3 = (float *)malloc(sizeof(float) * N_2 * M_2);
+        float *P4 = (float *)malloc(sizeof(float) * N_2 * M_2);
+        float *P5 = (float *)malloc(sizeof(float) * N_2 * M_2);
+        float *P6 = (float *)malloc(sizeof(float) * N_2 * M_2);
+        float *P7 = (float *)malloc(sizeof(float) * N_2 * M_2);
         
         sum(A11, A_row, A22, A_row, S1, O_2, N_2, O_2); //S1
         sum(B11, B_row, B22, B_row, S2, M_2, O_2, M_2); //S2
@@ -164,9 +186,10 @@ void StrassenMult(std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O, const do
     }
 }
 
-void multiply(double *mat1,
-              double *mat2, std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O,
-              double *res) {
+void multiply(float *mat1,
+              float *mat2, std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O,
+              float *res) {
     StrassenMult(N, M, O, mat1, O, mat2, M, res, M); //this algorithm is good only for big matrices
+    //GeneralMult(N, M, O, mat1, O, mat2, M, res, M);
 }
 
