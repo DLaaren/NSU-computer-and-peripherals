@@ -1,7 +1,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
-#include <xmmintrin.h>
+#include <immintrin.h>
 #include <cstring>
 
 void simple_multiply(float *mat1,
@@ -17,61 +17,44 @@ void simple_multiply(float *mat1,
 
 void sum(const float *A, std::ptrdiff_t A_row, const float *B, std::ptrdiff_t B_row, float *C, std::ptrdiff_t C_row,
          std::ptrdiff_t N, std::ptrdiff_t M) {
-    /* for (std::ptrdiff_t i = 0; i < N; i++) {
-        for (std::ptrdiff_t j = 0; j < M; j++) {
-            C [i * C_row + j] = A [i * A_row + j] + B [i * B_row + j];
-        }
-    } */
 
     for (int i = 0; i < N; i++) {
-        __m128 result;
-        for (int j = 0; j < M; j += 4) {
-            __m128 A_vector = _mm_loadu_ps(&A[i * A_row + j]);
-            __m128 B_vector = _mm_loadu_ps(&B[i * B_row + j]);
-            result = _mm_add_ps(A_vector, B_vector);
-            _mm_storeu_ps(&C[i * C_row + j], result);
+        __m256 result;
+        for (int j = 0; j < M; j += 8) {
+            __m256 A_vector = _mm256_loadu_ps(&A[i * A_row + j]);
+            __m256 B_vector = _mm256_loadu_ps(&B[i * B_row + j]);
+            result = _mm256_add_ps(A_vector, B_vector);
+            _mm256_storeu_ps(&C[i * C_row + j], result);
         }
     }
 }
 
 void sub(const float *A, std::ptrdiff_t A_row, const float *B, std::ptrdiff_t B_row, float *C, std::ptrdiff_t C_row,
          std::ptrdiff_t N, std::ptrdiff_t M) {
-    /* for (std::ptrdiff_t i = 0; i < N; i++) {
-        for (std::ptrdiff_t j = 0; j < M; j++) {
-            C [i * C_row + j] = A [i * A_row + j] - B [i * B_row + j];
-        }
-    } */
 
     for (int i = 0; i < N; i++) {
-        __m128 result;
-        for (int j = 0; j < M; j += 4) {
-            __m128 A_vector = _mm_loadu_ps(&A[i * A_row + j]);
-            __m128 B_vector = _mm_loadu_ps(&B[i * B_row + j]);
-            result = _mm_sub_ps(A_vector, B_vector);
-            _mm_storeu_ps(&C[i * C_row + j], result);
+        __m256 result;
+        for (int j = 0; j < M; j += 8) {
+            __m256 A_vector = _mm256_loadu_ps(&A[i * A_row + j]);
+            __m256 B_vector = _mm256_loadu_ps(&B[i * B_row + j]);
+            result = _mm256_sub_ps(A_vector, B_vector);
+            _mm256_storeu_ps(&C[i * C_row + j], result);
         }
     }
 }
 
 void GeneralMult(std::ptrdiff_t N, std::ptrdiff_t M, std::ptrdiff_t O, const float *A, std::ptrdiff_t A_row, const float *B, std::ptrdiff_t B_row, float *C, std::ptrdiff_t C_row) {
-    /*for (std::ptrdiff_t i = 0; i < N; i++) {
-        for (std::ptrdiff_t j = 0; j < M; j++) {
-            C [i * C_row + j] = 0.0;  
-            for (std::ptrdiff_t k = 0; k < O; k++)  
-                C [i * C_row + j] += (float)(A [i * A_row + k] * B [k * B_row + j]);  
-        } 
-    }*/
 
     memset(C, 0, sizeof(float) * N*M);
     for (int i = 0; i < N; i++) {
         for (int k = 0; k < O; k++) {
-            __m128 A_scalar = _mm_load_ps1(&A[i * A_row + k]);
-            for (int j = 0; j < M; j += 4) {
-                __m128 B_vector = _mm_loadu_ps(&B[k * B_row + j]);
-                __m128 mulResult = _mm_mul_ps(A_scalar, B_vector);
-                __m128 resMatrix = _mm_loadu_ps(&C[i * C_row + j]);
-                resMatrix = _mm_add_ps(mulResult, resMatrix);
-                _mm_storeu_ps(&C[i * C_row + j], resMatrix);
+            __m256 A_scalar = _mm256_set1_ps(A[i * A_row + k]);
+            for (int j = 0; j < M; j += 8) {
+                __m256 B_vector = _mm256_loadu_ps(&B[k * B_row + j]);
+                __m256 mulResult = _mm256_mul_ps(A_scalar, B_vector);
+                __m256 resMatrix = _mm256_loadu_ps(&C[i * C_row + j]);
+                resMatrix = _mm256_add_ps(mulResult, resMatrix);
+                _mm256_storeu_ps(&C[i * C_row + j], resMatrix);
             }
         }
     }
